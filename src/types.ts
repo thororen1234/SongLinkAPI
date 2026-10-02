@@ -1,6 +1,14 @@
 export type EntityType = 'song' | 'album';
 
-export type ApiProvider = 'spotify' | 'itunes' | 'deezer' | 'youtube' | 'tidal';
+export type ApiProvider =
+  | 'spotify'
+  | 'itunes'
+  | 'deezer'
+  | 'youtube'
+  | 'youtubeMusic'
+  | 'tidal'
+  | 'pandora'
+  | 'soundcloud';
 
 export type Platform =
   | 'spotify'
@@ -9,7 +17,9 @@ export type Platform =
   | 'deezer'
   | 'youtube'
   | 'youtubeMusic'
-  | 'tidal';
+  | 'tidal'
+  | 'pandora'
+  | 'soundcloud';
 
 export interface PlatformLink {
   url: string;

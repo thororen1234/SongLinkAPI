@@ -137,16 +137,17 @@ export function score(target: SearchTarget, cand: Omit<Candidate<unknown>, 'item
 export const MATCH_THRESHOLD = 0.72;
 
 export function bestMatch<T>(target: SearchTarget, candidates: Candidate<T>[]): T | null {
-  let best: T | null = null;
-  let bestScore = MATCH_THRESHOLD;
+  const wanted = clean(fold(target.title));
+  let best: { item: T; score: number; exactness: number } | null = null;
   for (const c of candidates) {
     const s = score(target, c);
-    if (s > bestScore) {
-      bestScore = s;
-      best = c.item;
+    if (s <= MATCH_THRESHOLD) continue;
+    const exactness = similarity(wanted, clean(fold(c.title)));
+    if (!best || s > best.score + 1e-9 || (Math.abs(s - best.score) <= 1e-9 && exactness > best.exactness)) {
+      best = { item: c.item, score: s, exactness };
     }
   }
-  return best;
+  return best?.item ?? null;
 }
 
 export function splitYouTubeTitle(videoTitle: string, channel: string): { title: string; artistName: string } {

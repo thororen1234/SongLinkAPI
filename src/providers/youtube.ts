@@ -22,19 +22,17 @@ function toEntity(v: Video): Entity {
     thumbnailWidth: 480,
     thumbnailHeight: 360,
     apiProvider: 'youtube',
-    platforms: ['youtube', 'youtubeMusic'],
+    platforms: ['youtube'],
     durationMs: v.durationMs,
     links: {
       youtube: {
         url: `https://www.youtube.com/watch?v=${v.id}`,
         nativeAppUriMobile: `vnd.youtube://www.youtube.com/watch?v=${v.id}`,
       },
-      youtubeMusic: { url: `https://music.youtube.com/watch?v=${v.id}` },
     },
   };
 }
 
-/** "4:29" / "1:02:03" -> ms */
 function clockToMs(s: string | undefined): number | undefined {
   if (!s) return undefined;
   const parts = s.split(':').map(Number);
@@ -42,7 +40,6 @@ function clockToMs(s: string | undefined): number | undefined {
   return parts.reduce((acc, n) => acc * 60 + n, 0) * 1000;
 }
 
-/** "PT4M29S" -> ms */
 function isoDurationToMs(s: string | undefined): number | undefined {
   const m = s?.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
   if (!m) return undefined;
@@ -95,7 +92,6 @@ function decodeEntities(s: string): string {
     .replace(/&gt;/g, '>');
 }
 
-/** Keyless fallback: read the `ytInitialData` blob embedded in the search results page. */
 async function searchWithoutApi(query: string, country: string): Promise<Video[]> {
   const url = new URL('https://www.youtube.com/results');
   url.search = new URLSearchParams({ search_query: query, sp: 'EgIQAQ==', gl: country, hl: 'en' }).toString();
@@ -127,7 +123,7 @@ async function searchWithoutApi(query: string, country: string): Promise<Video[]
 
 export const youtubeProvider: Provider = {
   apiProvider: 'youtube',
-  platformAliases: ['youtube', 'youtubeMusic', 'youtubemusic'],
+  platformAliases: ['youtube'],
 
   canLookup: () => true,
   canSearch: () => true,
@@ -136,7 +132,7 @@ export const youtubeProvider: Provider = {
     const host = url.hostname.replace(/^(www|m)\./, '');
     let id: string | null = null;
     if (host === 'youtu.be') id = url.pathname.slice(1).split('/')[0];
-    else if (host === 'youtube.com' || host === 'music.youtube.com') {
+    else if (host === 'youtube.com') {
       id = url.searchParams.get('v') ?? url.pathname.match(/^\/(?:shorts|embed|live)\/([^/]+)/)?.[1] ?? null;
     }
     return id && /^[A-Za-z0-9_-]{11}$/.test(id) ? { type: 'song', id } : null;
@@ -149,7 +145,6 @@ export const youtubeProvider: Provider = {
   },
 
   async search(target: SearchTarget, country: string) {
-    // Albums on YouTube are auto-generated playlists that can't be searched reliably.
     if (target.type !== 'song') return null;
     const query = buildQuery(target);
     const videos = config.youtube.apiKey
@@ -159,7 +154,6 @@ export const youtubeProvider: Provider = {
       ...splitYouTubeTitle(v.title, v.channel),
       durationMs: v.durationMs,
       item: v,
-      // Prefer the label-uploaded "Artist - Topic" audio over fan uploads.
       bonus: / - Topic$/.test(v.channel) ? 0.05 : 0,
     }));
     const hit = bestMatch(target, candidates);

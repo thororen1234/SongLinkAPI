@@ -49,7 +49,6 @@ function toEntity(type: EntityType, d: any): Entity {
   };
 }
 
-/** Keyless fallback: the public embed page ships the entity metadata as JSON. */
 async function lookupViaEmbed(ref: LinkRef): Promise<Entity | null> {
   const kind = ref.type === 'song' ? 'track' : 'album';
   let html: string;

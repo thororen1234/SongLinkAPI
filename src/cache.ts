@@ -16,7 +16,6 @@ export class TtlCache<V> {
       this.#store.delete(key);
       return undefined;
     }
-    // Refresh LRU position.
     this.#store.delete(key);
     this.#store.set(key, hit);
     return hit.value;

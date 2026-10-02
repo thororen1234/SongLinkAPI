@@ -3,7 +3,6 @@ import { ClientCredentialsToken, getJsonOrNull } from '../http.ts';
 import { bestMatch, buildQuery, type Candidate } from '../match.ts';
 import type { Entity, EntityType, LinkRef, LookupOptions, Provider, SearchTarget } from '../types.ts';
 
-// TIDAL's JSON:API (https://developer.tidal.com/apiref)
 const API = 'https://openapi.tidal.com/v2';
 const hasCredentials = () => Boolean(config.tidal.clientId && config.tidal.clientSecret);
 
@@ -39,7 +38,8 @@ function artistNames(resource: any, included: any[]): string {
 function toEntity(type: EntityType, resource: any, included: any[]): Entity {
   const a = resource.attributes ?? {};
   const kind = type === 'song' ? 'track' : 'album';
-  const title = a.version ? `${a.title} (${a.version})` : a.title;
+  const hasVersion = !a.version || a.title?.toLowerCase().includes(String(a.version).toLowerCase());
+  const title = hasVersion ? a.title : `${a.title} (${a.version})`;
   return {
     uniqueId: `TIDAL_${type === 'song' ? 'SONG' : 'ALBUM'}::${resource.id}`,
     id: String(resource.id),

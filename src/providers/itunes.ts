@@ -46,6 +46,11 @@ function toEntity(type: EntityType, r: any, country: string): Entity {
   };
 }
 
+function cleanLast(results: any[]): any[] {
+  const isClean = (r: any) => (r.collectionExplicitness ?? r.trackExplicitness) === 'cleaned';
+  return [...results].sort((a, b) => Number(isClean(a)) - Number(isClean(b)));
+}
+
 export const itunesProvider: Provider = {
   apiProvider: 'itunes',
   platformAliases: ['itunes', 'appleMusic', 'applemusic', 'apple'],
@@ -82,9 +87,20 @@ export const itunesProvider: Provider = {
   },
 
   async search(target: SearchTarget, country: string) {
+    const toCandidates = (results: any[]): Candidate<any>[] =>
+      cleanLast(results).map((r) => ({
+        title: target.type === 'song' ? r.trackName : r.collectionName,
+        artistName: r.artistName ?? '',
+        durationMs: target.type === 'song' ? r.trackTimeMillis : undefined,
+        item: r,
+      }));
+
     if (target.type === 'album' && target.upc) {
-      const [hit] = await itunes('/lookup', { upc: target.upc, country });
-      if (hit?.wrapperType === 'collection') return toEntity('album', hit, country);
+      const albums = (await itunes('/lookup', { upc: target.upc, country })).filter(
+        (r) => r.wrapperType === 'collection',
+      );
+      const hit = bestMatch(target, toCandidates(albums)) ?? cleanLast(albums)[0];
+      if (hit) return toEntity('album', hit, country);
     }
     const results = await itunes('/search', {
       term: buildQuery(target),
@@ -93,13 +109,7 @@ export const itunesProvider: Provider = {
       entity: target.type === 'song' ? 'song' : 'album',
       limit: '15',
     });
-    const candidates: Candidate<any>[] = results.map((r) => ({
-      title: target.type === 'song' ? r.trackName : r.collectionName,
-      artistName: r.artistName ?? '',
-      durationMs: target.type === 'song' ? r.trackTimeMillis : undefined,
-      item: r,
-    }));
-    const hit = bestMatch(target, candidates);
+    const hit = bestMatch(target, toCandidates(results));
     return hit ? toEntity(target.type, hit, country) : null;
   },
 };

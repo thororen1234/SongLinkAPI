@@ -8,6 +8,8 @@ const PLATFORM_NAMES: Record<Platform, string> = {
   youtube: 'YouTube',
   youtubeMusic: 'YouTube Music',
   tidal: 'TIDAL',
+  pandora: 'Pandora',
+  soundcloud: 'SoundCloud',
 };
 
 function esc(s: string | number | undefined): string {
