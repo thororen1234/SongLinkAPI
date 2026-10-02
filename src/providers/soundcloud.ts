@@ -5,8 +5,23 @@ import type { Entity, EntityType, LinkRef, LookupOptions, Provider, SearchTarget
 const API = 'https://api-v2.soundcloud.com';
 
 const RESERVED_PATHS = new Set([
-  'discover', 'search', 'stream', 'you', 'upload', 'charts', 'pages', 'settings', 'messages',
-  'notifications', 'people', 'tags', 'stations', 'feed', 'terms-of-use', 'mobile', 'jobs',
+  'discover',
+  'search',
+  'stream',
+  'you',
+  'upload',
+  'charts',
+  'pages',
+  'settings',
+  'messages',
+  'notifications',
+  'people',
+  'tags',
+  'stations',
+  'feed',
+  'terms-of-use',
+  'mobile',
+  'jobs',
 ]);
 
 let clientIdPromise: Promise<string> | null = null;
@@ -88,7 +103,9 @@ export const soundcloudProvider: Provider = {
     if (slug === 'sets' && third) {
       return { type: 'album', id: [user, slug, third, ...(secret?.startsWith('s-') ? [secret] : [])].join('/') };
     }
-    if (['tracks', 'albums', 'popular-tracks', 'likes', 'reposts', 'followers', 'following', 'comments'].includes(slug)) {
+    if (
+      ['tracks', 'albums', 'popular-tracks', 'likes', 'reposts', 'followers', 'following', 'comments'].includes(slug)
+    ) {
       return null;
     }
     return { type: 'song', id: [user, slug, ...(third?.startsWith('s-') ? [third] : [])].join('/') };

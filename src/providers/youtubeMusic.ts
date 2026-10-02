@@ -132,19 +132,18 @@ async function lookupAlbum(id: string): Promise<Album | null> {
   const first = findAll(data, 'musicResponsiveListItemRenderer')[0];
   const firstTrack: Song | undefined = first?.playlistItemData?.videoId
     ? {
-      id: first.playlistItemData.videoId,
-      title: flexColumn(first, 0),
-      artistName,
-      durationMs: clockToMs(text(first.fixedColumns?.[0]?.musicResponsiveListItemFixedColumnRenderer?.text)),
-      thumbnailUrl,
-    }
+        id: first.playlistItemData.videoId,
+        title: flexColumn(first, 0),
+        artistName,
+        durationMs: clockToMs(text(first.fixedColumns?.[0]?.musicResponsiveListItemFixedColumnRenderer?.text)),
+        thumbnailUrl,
+      }
     : undefined;
   return {
     id: browseId,
     title: text(header.title),
     artistName,
-    url:
-      data.microformat?.microformatDataRenderer?.urlCanonical ?? `https://music.youtube.com/browse/${browseId}`,
+    url: data.microformat?.microformatDataRenderer?.urlCanonical ?? `https://music.youtube.com/browse/${browseId}`,
     trackCount: trackCount ? Number(trackCount) : undefined,
     firstTrack,
     thumbnailUrl,
@@ -169,7 +168,10 @@ async function searchSongs(query: string, country: string): Promise<Song[]> {
   });
 }
 
-async function searchAlbums(query: string, country: string): Promise<{ id: string; title: string; artistName: string }[]> {
+async function searchAlbums(
+  query: string,
+  country: string,
+): Promise<{ id: string; title: string; artistName: string }[]> {
   const data = await innertube('search', { query, params: ALBUMS_FILTER }, country);
   return findAll(data, 'musicResponsiveListItemRenderer').flatMap((r) => {
     const id: string | undefined = r.navigationEndpoint?.browseEndpoint?.browseId;
@@ -195,7 +197,11 @@ export const youtubeMusicProvider: Provider = {
       const browse = url.pathname.match(/^\/browse\/(MPREb_[\w-]+)/)?.[1];
       if (browse) return { type: 'album', id: browse };
     }
-    if ((host === 'music.youtube.com' || host === 'youtube.com') && list?.startsWith('OLAK5uy_') && !url.searchParams.get('v')) {
+    if (
+      (host === 'music.youtube.com' || host === 'youtube.com') &&
+      list?.startsWith('OLAK5uy_') &&
+      !url.searchParams.get('v')
+    ) {
       return { type: 'album', id: list };
     }
     return null;
@@ -221,7 +227,10 @@ export const youtubeMusicProvider: Provider = {
       return hit ? songEntity(hit) : null;
     }
     const albums = await searchAlbums(query, country);
-    const hit = bestMatch(target, albums.map((a) => ({ ...a, item: a })));
+    const hit = bestMatch(
+      target,
+      albums.map((a) => ({ ...a, item: a })),
+    );
     if (!hit) return null;
     const full = await lookupAlbum(hit.id);
     return full ? albumEntity(full) : null;

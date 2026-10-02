@@ -63,7 +63,9 @@ async function expandShortLink(url: URL): Promise<URL | null> {
     const final = new URL(res.url);
     if (final.href !== url.href) return final;
     const html = await res.text();
-    const m = html.match(/https:\/\/(?:open\.spotify\.com|www\.deezer\.com|music\.apple\.com|tidal\.com|www\.pandora\.com|soundcloud\.com)\/[^"'\s<>]+/);
+    const m = html.match(
+      /https:\/\/(?:open\.spotify\.com|www\.deezer\.com|music\.apple\.com|tidal\.com|www\.pandora\.com|soundcloud\.com)\/[^"'\s<>]+/,
+    );
     return m ? new URL(m[0].replace(/&amp;/g, '&')) : null;
   } catch {
     return null;

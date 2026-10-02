@@ -13,9 +13,27 @@ const NOISE_RE =
 const FEAT_RE = /^(feat\.?|ft\.?|featuring|with|prod\.?|produced by)\s/i;
 
 const VERSION_MARKERS = [
-  'remix', 'live', 'acoustic', 'instrumental', 'karaoke', 'cover', 'sped up', 'slowed',
-  'radio edit', 'extended', 'demo', 'reprise', 'acapella', 'a cappella', 'nightcore', 'reverb',
-  'unplugged', 'orchestral', 'piano version', 'mashup', 'tribute',
+  'remix',
+  'live',
+  'acoustic',
+  'instrumental',
+  'karaoke',
+  'cover',
+  'sped up',
+  'slowed',
+  'radio edit',
+  'extended',
+  'demo',
+  'reprise',
+  'acapella',
+  'a cappella',
+  'nightcore',
+  'reverb',
+  'unplugged',
+  'orchestral',
+  'piano version',
+  'mashup',
+  'tribute',
 ];
 
 function fold(s: string): string {
@@ -152,7 +170,10 @@ export function bestMatch<T>(target: SearchTarget, candidates: Candidate<T>[]): 
 
 export function splitYouTubeTitle(videoTitle: string, channel: string): { title: string; artistName: string } {
   const isTopic = /\s-\stopic$/i.test(channel);
-  const channelArtist = channel.replace(/\s-\stopic$/i, '').replace(/vevo$/i, '').trim();
+  const channelArtist = channel
+    .replace(/\s-\stopic$/i, '')
+    .replace(/vevo$/i, '')
+    .trim();
   if (!isTopic) {
     const m = videoTitle.match(/^(.+?)\s[-–—|]\s(.+)$/);
     if (m) return { artistName: m[1].trim(), title: m[2].trim() };

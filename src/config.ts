@@ -5,7 +5,10 @@ const port = Number(env.PORT) || 3000;
 export const config = {
   port,
   publicUrl: (env.PUBLIC_URL || `http://localhost:${port}`).replace(/\/+$/, ''),
-  apiKeys: (env.API_KEYS || '').split(',').map((k) => k.trim()).filter(Boolean),
+  apiKeys: (env.API_KEYS || '')
+    .split(',')
+    .map((k) => k.trim())
+    .filter(Boolean),
   cacheTtlMs: (Number(env.CACHE_TTL_SECONDS) || 86400) * 1000,
   defaultCountry: (env.DEFAULT_COUNTRY || 'US').toUpperCase(),
   spotify: {

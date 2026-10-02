@@ -1,6 +1,4 @@
 node_modules/
 .next/
+pnpm-lock.yaml
 tsconfig.tsbuildinfo
-.env
-*.log
-next-env.d.ts

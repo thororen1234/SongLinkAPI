@@ -147,9 +147,7 @@ export const youtubeProvider: Provider = {
   async search(target: SearchTarget, country: string) {
     if (target.type !== 'song') return null;
     const query = buildQuery(target);
-    const videos = config.youtube.apiKey
-      ? await searchWithApi(query, country)
-      : await searchWithoutApi(query, country);
+    const videos = config.youtube.apiKey ? await searchWithApi(query, country) : await searchWithoutApi(query, country);
     const candidates: Candidate<Video>[] = videos.map((v) => ({
       ...splitYouTubeTitle(v.title, v.channel),
       durationMs: v.durationMs,

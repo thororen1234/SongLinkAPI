@@ -15,9 +15,7 @@ function toEntity(type: EntityType, r: any, country: string): Entity {
   const id = String(type === 'song' ? r.trackId : r.collectionId);
   const cc = country.toLowerCase();
   const path =
-    type === 'song'
-      ? `${cc}/album/_/${r.collectionId}?i=${r.trackId}&mt=1`
-      : `${cc}/album/_/${r.collectionId}?mt=1`;
+    type === 'song' ? `${cc}/album/_/${r.collectionId}?i=${r.trackId}&mt=1` : `${cc}/album/_/${r.collectionId}?mt=1`;
   const artwork: string | undefined = r.artworkUrl100?.replace(/\/\d+x\d+bb\./, '/512x512bb.');
   return {
     uniqueId: `ITUNES_${type === 'song' ? 'SONG' : 'ALBUM'}::${id}`,
