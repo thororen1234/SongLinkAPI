@@ -1,6 +1,6 @@
 FROM node:lts-alpine AS deps
 WORKDIR /app
-RUN corepack enable
+RUN npm i -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
